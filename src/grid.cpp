@@ -11,7 +11,7 @@ class Grid {
 
     public:
         Grid(int l, int c): largura(l), comprimento(c), dados(l * c, 0){}
-
+        
         int get_indice(int x, int y) const {
             return y * largura + x;
         }
@@ -28,12 +28,15 @@ class Grid {
                 dados[get_indice(x, y)] = valor;
             }
         }
+        int get_largura() const { return largura; }
+        int get_comprimento() const { return comprimento; }
         
         void set_valor(int x, int y, int valor){
             if (x >= 0 && x< largura && y >= 0 && y < comprimento){
                 dados[get_valor(x, y)] = valor;
             }
         }
+        
         // Algoritmo de Bresenham para traçar linhas 
         void draw_line(int x1, int y1, int x2, int y2){
             int dx = std::abs(x2 - x1);
