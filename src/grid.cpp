@@ -11,11 +11,23 @@ class Grid {
 
     public:
         Grid(int l, int c): largura(l), comprimento(c), dados(l * c, 0){}
-        int get_valor(int x, int y) const {
+
+        int get_indice(int x, int y) const {
             return y * largura + x;
         }
-        int get_largura() const { return largura; }
-        int get_comprimento() const { return comprimento; }
+
+        int get_valor(int x, int y) const {
+            if (x >= 0 && x < largura && y >= 0 && y < comprimento) {
+                return dados[get_indice(x, y)];
+            }
+            return 0;
+        }
+
+        void set_valor(int x, int y, int valor) {
+            if (x >= 0 && x < largura && y >= 0 && y < comprimento) {
+                dados[get_indice(x, y)] = valor;
+            }
+        }
         
         void set_valor(int x, int y, int valor){
             if (x >= 0 && x< largura && y >= 0 && y < comprimento){
