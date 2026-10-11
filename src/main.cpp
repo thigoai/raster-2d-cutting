@@ -52,6 +52,8 @@ bool ler_molde(std::ifstream& arquivo, Molde& molde){
     // Calcula a dimensão do molde 
     molde.largura = max_x - min_x;
     molde.comprimento = max_y - min_y;
+    molde.min_x = min_x; 
+    molde.min_y = min_y;
 
     return true;
 }
