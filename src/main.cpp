@@ -1,125 +1,12 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
-#include <string>
-#include <limits>
+#include <cmath>
 #include <algorithm>
 
-#include "grid.cpp"
-
-struct Ponto{
-    double x, y;
-};
-
-struct Molde {
-    int id;
-    int quant;
-    std::vector<Ponto> vertices;
-    double largura, comprimento;
-    double min_x, min_y;
-};
-
-bool ler_molde(std::ifstream& arquivo, Molde& molde){
-    std::string m;
-
-    if (!(arquivo >> m)) return false;
-
-    arquivo >> molde.id;
-
-    arquivo >> m >> molde.quant;
-
-    int num_vertices;
-    arquivo >> m >> m >> m >> num_vertices;
-
-    arquivo >> m >> m;
-
-    double min_x = std::numeric_limits<double>::max();
-    double max_x = std::numeric_limits<double>::lowest();
-    double min_y = std::numeric_limits<double>::max();
-    double max_y = std::numeric_limits<double>::lowest();
-
-    for (int i = 0; i < num_vertices; ++i){
-        Ponto p;
-        arquivo >> p.x >> p.y;
-        molde.vertices.push_back(p);
-
-        if (p.x < min_x) min_x = p.x;
-        if (p.x > max_x) max_x = p.x;
-        if (p.y < min_y) min_y = p.y;
-        if (p.y > max_y) max_y = p.y;
-    }
-
-    // Calcula a dimensão do molde 
-    molde.largura = max_x - min_x;
-    molde.comprimento = max_y - min_y;
-    molde.min_x = min_x; 
-    molde.min_y = min_y;
-
-    return true;
-}
-
-bool contem_ponto(double px, double py, const std::vector<Ponto>& vertices){
-    bool dentro = false;
-    const int n = vertices.size();
-
-    for (int i = 0, j = n - 1; i < n; j = i++) {
-        const double xi = vertices[i].x, yi = vertices[i].y;
-        const double xj = vertices[j].x, yj = vertices[j].y;
-
-        bool intersecta = ((yi > py) != (yj > py)) &&
-                          (px < (xj - xi) * (py - yi) / (yj - yi) + xi);
-        if (intersecta) dentro = !dentro;
-    }
-    return dentro;
-}
-
-Grid rasterizar_contorno(const Molde& molde, double escala) {
-    int largura_grid = std::ceil(molde.largura * escala) + 1;
-    int comprimento_grid = std::ceil(molde.comprimento * escala) + 1;
-
-    Grid grid_molde(largura_grid, comprimento_grid);
-    const size_t n = molde.vertices.size();
-
-    for (size_t i = 0; i < n; ++i) {
-        Ponto p1 = molde.vertices[i];
-        Ponto p2 = molde.vertices[(i + 1) % n];
-
-        int x1 = std::round((p1.x - molde.min_x) * escala);
-        int y1 = std::round((p1.y - molde.min_y) * escala);
-        int x2 = std::round((p2.x - molde.min_x) * escala);
-        int y2 = std::round((p2.y - molde.min_y) * escala);
-
-        grid_molde.draw_line(x1, y1, x2, y2);
-    }
-
-    return grid_molde;
-}
-
-void preencher_poligono(Grid& grid_molde, const Molde& molde, double escala) {
-    int largura_grid = grid_molde.get_largura();
-    int comprimento_grid = grid_molde.get_comprimento();
-
-    for (int y_grid = 0; y_grid < comprimento_grid; ++y_grid) {
-        for (int x_grid = 0; x_grid < largura_grid; ++x_grid) {
-            // Verifica se o píxel ainda está vazio
-            if (grid_molde.get_valor(x_grid, y_grid) == 0) {
-                // Converte coordenada discreta do Grid para coordenada contínua do Molde
-                double real_x = (x_grid / escala) + molde.min_x;
-                double real_y = (y_grid / escala) + molde.min_y;
-
-                if (contem_ponto(real_x, real_y, molde.vertices)) {
-                    grid_molde.set_valor(x_grid, y_grid, 1);
-                }
-            }
-        }
-    }
-}
-
-Grid rasterizar_molde(const Molde& molde, double escala = 1.0) {
-    Grid grid_molde = rasterizar_contorno(molde, escala);
-    preencher_poligono(grid_molde, molde, escala);
-    return grid_molde;
-}
+#include "grid.h"
+#include "molde.h"
+#include "empacotador.h"
 
 int main() {
     std::ifstream arquivo("./dataset/swim.txt");
@@ -128,21 +15,59 @@ int main() {
         return 1;
     }
 
+    const double ESCALA = 0.02;
+    const double LARGURA_FOLHA_REAL = 5752.0;
+
+    std::vector<Componente> lista_pecas;
+    int soma_comprimentos_grid = 0;
+    int area_total_ocupada_pelas_pecas = 0;
+
     Molde molde_atual;
-    
     while (ler_molde(arquivo, molde_atual)) {
-        std::cout << "Molde " << molde_atual.id << " {" << std::endl;
-        std::cout << "- Quantidade: " << molde_atual.quant << std::endl;
-        std::cout << "- Largura: " << molde_atual.largura << std::endl;
-        std::cout << "- Comprimento: " << molde_atual.comprimento << 
-                    "\n}\n" << std::endl;
-        
-        molde_atual.vertices.clear(); 
+        Grid g = rasterizar_molde(molde_atual, ESCALA);
+
+        int pixeis_peca = 0;
+        for (int y = 0; y < g.get_comprimento(); ++y) {
+            for (int x = 0; x < g.get_largura(); ++x) {
+                if (g.get_valor(x, y) != 0) pixeis_peca++;
+            }
+        }
+
+        for (int q = 0; q < molde_atual.quant; ++q) {
+            Componente p{molde_atual.id, g, g.get_largura() * g.get_comprimento()};
+            lista_pecas.push_back(p);
+            soma_comprimentos_grid += g.get_comprimento();
+            area_total_ocupada_pelas_pecas += pixeis_peca;
+        }
+    }
+    arquivo.close();
+
+    // 1. Ordenação decrescente pela área do retângulo envolvente
+    std::sort(lista_pecas.begin(), lista_pecas.end(), [](const Componente& a, const Componente& b) {
+        return a.area_retangulo > b.area_retangulo;
+    });
+
+    // 2. Cria a folha de tecido
+    int largura_folha_grid = std::ceil(LARGURA_FOLHA_REAL * ESCALA);
+    Grid folha(largura_folha_grid, soma_comprimentos_grid + 10);
+
+    // 3. Empacotamento em duas etapas
+    int comprimento_final_grid = 0;
+    for (const auto& peca : lista_pecas) {
+        alocar_componente(folha, peca, comprimento_final_grid);
     }
 
-    arquivo.close();
+    // 4. Resultados
+    double comprimento_real_usado = comprimento_final_grid / ESCALA;
+    double eficiencia = static_cast<double>(area_total_ocupada_pelas_pecas) /
+                        (largura_folha_grid * comprimento_final_grid) * 100.0;
+
+    std::cout << "=== RESULTADO DO EMPACOTAMENTO ===" << std::endl;
+    std::cout << "Total de pecas alocadas : " << lista_pecas.size() << std::endl;
+    std::cout << "Comprimento na grelha   : " << comprimento_final_grid << " celulas" << std::endl;
+    std::cout << "Comprimento real (C_L)  : " << comprimento_real_usado << std::endl;
+    std::cout << "Eficiencia do layout    : " << eficiencia << "%" << std::endl;
+
+    exportar_ppm(folha, comprimento_final_grid, "layout_swim.ppm");
     return 0;
 }
-
-
-
