@@ -1,4 +1,12 @@
-# raster-2d-cutting
+# 2D-irregular-cutting-solver
 
-O método Raster divide a superfície do material e as peças irregulares em matrizes bidimensionais 
-de pequenas células quadradas de dimensão finita e igual.
+Implementação em **C++** de uma heurística construtiva para o problema de Corte de Estoque Bidimensional Irregular.
+
+## Compilar e rodar
+
+### Compilação
+
+```bash
+g++ -O3 -Iinclude src/main.cpp src/grid.cpp src/molde.cpp src/empacotador.cpp -o empacotador
+./empacotador
+```
