@@ -15,7 +15,7 @@ int main() {
         return 1;
     }
 
-    const double ESCALA = 0.02;
+    const double ESCALA = 0.05;
     const double LARGURA_FOLHA_REAL = 5752.0;
 
     std::vector<Componente> lista_pecas;
