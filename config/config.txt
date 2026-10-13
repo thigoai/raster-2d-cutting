@@ -1,10 +1,6 @@
-# Configuracao do empacotador (formato: chave = valor)
+dataset = ./dataset
 
-# Instancia de entrada
-arquivo = ./dataset/trousers.txt
-
-# Fator de conversao de coordenadas reais para celulas do grid
-escala = 0.1
-
-# Largura real da folha de tecido (mesma unidade dos vertices)
-largura_folha_real = 5752
+# Instância = <Escala> <Largura_folha_real>
+shirts   = 10  40
+trousers = 10  79
+swim     = 0.1 5752

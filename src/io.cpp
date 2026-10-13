@@ -2,6 +2,7 @@
 #include <iostream>
 #include <limits>
 #include <filesystem>
+#include <sstream>
 
 static std::string aparar(const std::string& s) {
     const char* espacos = " \t\r\n";
@@ -18,7 +19,6 @@ bool ler_config(const std::string& caminho, Config& config) {
         return false;
     }
 
-    bool tem_arquivo = false, tem_escala = false, tem_largura = false;
     std::string linha;
     int num_linha = 0;
 
@@ -36,33 +36,30 @@ bool ler_config(const std::string& caminho, Config& config) {
         std::string chave = aparar(linha.substr(0, igual));
         std::string valor = aparar(linha.substr(igual + 1));
 
-        try {
-            if (chave == "arquivo") {
-                config.arquivo = valor;
-                tem_arquivo = true;
-            } else if (chave == "escala") {
-                config.escala = std::stod(valor);
-                tem_escala = true;
-            } else if (chave == "largura_folha_real") {
-                config.largura_folha_real = std::stod(valor);
-                tem_largura = true;
-            } else {
-                std::cerr << caminho << ":" << num_linha << ": chave desconhecida '" << chave << "'" << std::endl;
-                return false;
-            }
-        } catch (const std::exception&) {
-            std::cerr << caminho << ":" << num_linha << ": valor invalido para '" << chave << "'" << std::endl;
+        if (chave == "dataset") {
+            config.dataset = valor;
+            continue;
+        }
+
+        // Demais chaves: <instancia> = <escala> <largura_folha_real>
+        ParametrosInstancia params;
+        std::istringstream ss(valor);
+        std::string resto;
+        if (!(ss >> params.escala >> params.largura_folha_real) || (ss >> resto)) {
+            std::cerr << caminho << ":" << num_linha << ": esperado '" << chave
+                      << " = <escala> <largura_folha_real>'" << std::endl;
             return false;
         }
+        if (params.escala <= 0 || params.largura_folha_real <= 0) {
+            std::cerr << caminho << ":" << num_linha
+                      << ": escala e largura_folha_real devem ser positivos" << std::endl;
+            return false;
+        }
+        config.instancias[chave] = params;
     }
 
-    if (!tem_arquivo || !tem_escala || !tem_largura) {
-        std::cerr << "Configuracao incompleta em " << caminho
-                  << " (necessario: arquivo, escala, largura_folha_real)" << std::endl;
-        return false;
-    }
-    if (config.escala <= 0 || config.largura_folha_real <= 0) {
-        std::cerr << "escala e largura_folha_real devem ser positivos" << std::endl;
+    if (config.instancias.empty()) {
+        std::cerr << "Nenhuma instancia configurada em " << caminho << std::endl;
         return false;
     }
     return true;
