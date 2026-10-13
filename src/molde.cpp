@@ -7,12 +7,17 @@ bool ler_molde(std::ifstream& arquivo, Molde& molde) {
     std::string m;
     if (!(arquivo >> m)) return false;
 
-    arquivo >> molde.id;
-    arquivo >> m >> molde.quant;
+    std::string aux_id, aux_quant, aux_num_vertices;
 
-    int num_vertices;
-    arquivo >> m >> m >> m >> num_vertices;
+    arquivo >> aux_id;
+    arquivo >> m >> aux_quant;
+
+    arquivo >> m >> m >> m >> aux_num_vertices;
     arquivo >> m >> m;
+
+    int num_vertices = stoi(aux_num_vertices);
+    molde.id = stoi(aux_id);
+    molde.quant = stoi(aux_quant);
 
     double min_x = std::numeric_limits<double>::max();
     double max_x = std::numeric_limits<double>::lowest();
@@ -20,9 +25,16 @@ bool ler_molde(std::ifstream& arquivo, Molde& molde) {
     double max_y = std::numeric_limits<double>::lowest();
 
     molde.vertices.clear();
+
     for (int i = 0; i < num_vertices; ++i) {
         Ponto p;
-        arquivo >> p.x >> p.y;
+        std::string aux_px, aux_py;
+        
+        arquivo >> aux_px >> aux_py;
+
+        p.x = stoi(aux_px);
+        p.y = stoi(aux_py);
+        
         molde.vertices.push_back(p);
 
         if (p.x < min_x) min_x = p.x;
@@ -31,7 +43,6 @@ bool ler_molde(std::ifstream& arquivo, Molde& molde) {
         if (p.y > max_y) max_y = p.y;
     }
 
-    // Calcula a dimensão do molde 
     molde.largura = max_x - min_x;
     molde.comprimento = max_y - min_y;
     molde.min_x = min_x;

@@ -16,8 +16,8 @@ int main() {
         return 1;
     }
 
-    const double ESCALA = 0.05;
-    const double LARGURA_FOLHA_REAL = 5752.0;
+    const double ESCALA = 0.001;
+    const double LARGURA_FOLHA_REAL = 5752000.0;
 
     std::vector<Componente> lista_pecas;
     int soma_comprimentos_grid = 0;
