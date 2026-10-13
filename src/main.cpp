@@ -7,6 +7,7 @@
 #include "grid.h"
 #include "molde.h"
 #include "empacotador.h"
+#include "conversor.h"
 
 int main() {
     std::ifstream arquivo("./dataset/swim.txt");
@@ -69,5 +70,6 @@ int main() {
     std::cout << "Eficiencia do layout    : " << eficiencia << "%" << std::endl;
 
     exportar_ppm(folha, comprimento_final_grid, "layout_swim.ppm");
+    converter_ppm_para_png("layout_swim.ppm", "outputs");
     return 0;
 }
