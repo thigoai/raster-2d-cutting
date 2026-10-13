@@ -1,12 +1,48 @@
-# 2D-irregular-cutting-solver
+# raster-2d-cutting
 
-Implementação em **C++** de uma heurística construtiva para o problema de Corte de Estoque Bidimensional Irregular.
+Heurística construtiva em **C++** para o problema de Corte de Estoque Bidimensional Irregular.
+As peças são rasterizadas em uma grade e alocadas na folha em ordem decrescente de área do retângulo envolvente.
 
-## Compilar e rodar
+## Requisitos
 
-### Compilação
+- CMake 3.10+
+- Compilador com suporte a C++17
+
+## Compilar
 
 ```bash
-g++ -O3 -Iinclude src/main.cpp src/grid.cpp src/molde.cpp src/empacotador.cpp -o empacotador
-./empacotador
+cmake -S . -B build
+cmake --build build
+```
+
+## Executar
+
+Rode a partir da raiz do projeto (a instância é lida de `dataset/swim.txt`):
+
+```bash
+./build/empacotador
+```
+
+O programa imprime o comprimento usado e a eficiência do layout, e gera a imagem `layout_swim.ppm`.
+
+## Estrutura
+
+```
+.
+├── CMakeLists.txt
+├── dataset            # Instâncias
+│   ├── shirts.txt
+│   ├── swim.txt
+│   └── trousers.txt
+├── include 
+│   ├── empacotador.h
+│   ├── grid.h
+│   └── molde.h
+├── README.md
+└── src
+    ├── empacotador.cpp
+    ├── grid.cpp
+    ├── main.cpp         
+    └── molde.cpp
+
 ```
