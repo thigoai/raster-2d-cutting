@@ -23,7 +23,7 @@ Rode a partir da raiz do projeto (a instância é lida de `dataset/swim.txt`):
 ./build/empacotador
 ```
 
-O programa imprime o comprimento usado e a eficiência do layout, e gera a imagem `layout_swim.ppm`.
+O programa imprime o comprimento usado e a eficiência do layout, e gera as imagens `outputs/layout_swim.ppm` e `outputs/layout_swim.png`.
 
 ## Estrutura
 

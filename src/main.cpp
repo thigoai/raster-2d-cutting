@@ -3,21 +3,28 @@
 #include <vector>
 #include <cmath>
 #include <algorithm>
+#include <filesystem>
 
 #include "grid.h"
 #include "molde.h"
 #include "empacotador.h"
 #include "conversor.h"
+#include "io.h"
 
-int main() {
-    std::ifstream arquivo("./dataset/swim.txt");
+int main(int argc, char* argv[]) {
+    const std::string caminho_config = (argc > 1) ? argv[1] : "./config/config.txt";
+
+    Config config;
+    if (!ler_config(caminho_config, config)) return 1;
+
+    std::ifstream arquivo(config.arquivo);
     if (!arquivo.is_open()) {
-        std::cerr << "Erro ao abrir o ficheiro." << std::endl;
+        std::cerr << "Erro ao abrir o ficheiro: " << config.arquivo << std::endl;
         return 1;
     }
 
-    const double ESCALA = 0.001;
-    const double LARGURA_FOLHA_REAL = 5752000.0;
+    const double ESCALA = config.escala;
+    const double LARGURA_FOLHA_REAL = config.largura_folha_real;
 
     std::vector<Componente> lista_pecas;
     int soma_comprimentos_grid = 0;
@@ -69,7 +76,10 @@ int main() {
     std::cout << "Comprimento real (C_L)  : " << comprimento_real_usado << std::endl;
     std::cout << "Eficiencia do layout    : " << eficiencia << "%" << std::endl;
 
-    exportar_ppm(folha, comprimento_final_grid, "layout_swim.ppm");
-    converter_ppm_para_png("layout_swim.ppm", "outputs");
+    // Nome da saída derivado da instância (ex.: dataset/swim.txt -> outputs/layout_swim.ppm)
+    const std::string dir_saida = "outputs";
+    const std::string nome_ppm = dir_saida + "/layout_" + std::filesystem::path(config.arquivo).stem().string() + ".ppm";
+    if (!exportar_ppm(folha, comprimento_final_grid, nome_ppm)) return 1;
+    converter_ppm_para_png(nome_ppm, dir_saida);
     return 0;
 }

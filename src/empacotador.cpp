@@ -1,5 +1,4 @@
 #include "empacotador.h"
-#include <fstream>
 #include <algorithm>
 
 // primeiro estagio: verificar retangulo envolvente da peça
@@ -78,31 +77,4 @@ void alocar_componente(Grid& folha, const Componente& comp, int& comprimento_usa
 
     fixar_peca(folha, comp.grid, pos_x, pos_y, comp.id_molde);
     comprimento_usado = std::max(comprimento_usado, pos_y + comp.grid.get_comprimento());
-}
-
-void exportar_ppm(const Grid& folha, int comprimento_usado, const std::string& nome_arquivo) {
-    std::ofstream img(nome_arquivo);
-    int larg = folha.get_largura();
-
-    // Cabeçalho PPM (P3 = RGB em texto)
-    // Largura da imagem = comprimento_usado (eixo horizontal)
-    // Altura da imagem = largura da folha (eixo vertical)
-    img << "P3\n" << comprimento_usado << " " << larg << "\n255\n";
-
-    for (int x = larg - 1; x >= 0; --x) { // De cima para baixo
-        for (int y = 0; y < comprimento_usado; ++y) { // Da esquerda para a direita
-            int val = folha.get_valor(x, y);
-            if (val == 0) {
-                img << "20 20 20 "; // Fundo escuro para o tecido vazio
-            } else {
-                // Gera uma cor diferente baseada no ID do molde
-                int r = (val * 73) % 200 + 55;
-                int g = (val * 151) % 200 + 55;
-                int b = (val * 211) % 200 + 55;
-                img << r << " " << g << " " << b << " ";
-            }
-        }
-        img << "\n";
-    }
-    img.close();
 }

@@ -1,55 +1,5 @@
 #include "molde.h"
-#include <string>
-#include <limits>
 #include <cmath>
-
-bool ler_molde(std::ifstream& arquivo, Molde& molde) {
-    std::string m;
-    if (!(arquivo >> m)) return false;
-
-    std::string aux_id, aux_quant, aux_num_vertices;
-
-    arquivo >> aux_id;
-    arquivo >> m >> aux_quant;
-
-    arquivo >> m >> m >> m >> aux_num_vertices;
-    arquivo >> m >> m;
-
-    int num_vertices = stoi(aux_num_vertices);
-    molde.id = stoi(aux_id);
-    molde.quant = stoi(aux_quant);
-
-    double min_x = std::numeric_limits<double>::max();
-    double max_x = std::numeric_limits<double>::lowest();
-    double min_y = std::numeric_limits<double>::max();
-    double max_y = std::numeric_limits<double>::lowest();
-
-    molde.vertices.clear();
-
-    for (int i = 0; i < num_vertices; ++i) {
-        Ponto p;
-        std::string aux_px, aux_py;
-        
-        arquivo >> aux_px >> aux_py;
-
-        p.x = stoi(aux_px);
-        p.y = stoi(aux_py);
-        
-        molde.vertices.push_back(p);
-
-        if (p.x < min_x) min_x = p.x;
-        if (p.x > max_x) max_x = p.x;
-        if (p.y < min_y) min_y = p.y;
-        if (p.y > max_y) max_y = p.y;
-    }
-
-    molde.largura = max_x - min_x;
-    molde.comprimento = max_y - min_y;
-    molde.min_x = min_x;
-    molde.min_y = min_y;
-
-    return true;
-}
 
 bool contem_ponto(double px, double py, const std::vector<Ponto>& vertices) {
     bool dentro = false;

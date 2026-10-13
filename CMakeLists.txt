@@ -15,11 +15,12 @@ add_executable(empacotador
     src/molde.cpp
     src/empacotador.cpp
     src/conversor.cpp
+    src/io.cpp
 )
 
 target_include_directories(empacotador PRIVATE include)
 
-# Converte todos os .ppm de um diretório (padrão: ".") para outputs/*.png
+# Converte todos os .ppm de um diretório (padrão: "outputs") para outputs/*.png
 add_executable(ppm2png
     src/ppm2png.cpp
     src/conversor.cpp
