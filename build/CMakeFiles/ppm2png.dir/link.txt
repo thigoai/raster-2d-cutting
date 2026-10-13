@@ -1,1 +1,0 @@
-/usr/bin/c++ -O3 -DNDEBUG CMakeFiles/ppm2png.dir/src/ppm2png.cpp.o CMakeFiles/ppm2png.dir/src/conversor.cpp.o -o ppm2png 

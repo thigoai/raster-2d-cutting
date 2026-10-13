@@ -1,1 +1,0 @@
-/usr/bin/c++ -O3 -DNDEBUG CMakeFiles/empacotador.dir/src/main.cpp.o CMakeFiles/empacotador.dir/src/grid.cpp.o CMakeFiles/empacotador.dir/src/molde.cpp.o CMakeFiles/empacotador.dir/src/empacotador.cpp.o CMakeFiles/empacotador.dir/src/conversor.cpp.o -o empacotador 

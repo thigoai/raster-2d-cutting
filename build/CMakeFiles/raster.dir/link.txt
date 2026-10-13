@@ -1,1 +1,0 @@
-/usr/bin/c++ -O3 -DNDEBUG CMakeFiles/raster.dir/src/geometry/Piece.cpp.o CMakeFiles/raster.dir/src/geometry/Rasterizer.cpp.o CMakeFiles/raster.dir/src/io/InstanceLoader.cpp.o CMakeFiles/raster.dir/src/main.cpp.o -o raster 
