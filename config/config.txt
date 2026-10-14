@@ -1,0 +1,6 @@
+dataset = ./dataset
+
+# Instância = <Escala> <Largura_folha_real>
+shirts   = 10  40
+trousers = 10  79
+swim     = 0.1 5752

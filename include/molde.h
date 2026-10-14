@@ -2,7 +2,6 @@
 #define MOLDE_HPP
 
 #include <vector>
-#include <fstream>
 #include "grid.h"
 
 struct Ponto {
@@ -17,7 +16,6 @@ struct Molde {
     double min_x, min_y;
 };
 
-bool ler_molde(std::ifstream& arquivo, Molde& molde);
 bool contem_ponto(double px, double py, const std::vector<Ponto>& vertices);
 Grid rasterizar_contorno(const Molde& molde, double escala);
 void preencher_poligono(Grid& grid_molde, const Molde& molde, double escala);
